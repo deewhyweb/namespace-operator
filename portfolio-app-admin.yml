@@ -63,7 +63,98 @@ spec:
       metadata:
         name: {{ .Labels.portfolio }}-{{ .Labels.application }}-qa
   - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-admin-{{ .Labels.application }}-qa
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-qa
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: admin
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-admin  
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Name }}
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-edit-{{ .Labels.application }}-qa
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-qa
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: view
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-dev
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-view-{{ .Labels.application }}-qa
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-qa
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: view
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-view
+# Create the uat namespace
+  - objectTemplate: | 
       apiVersion: v1
       kind: Namespace
       metadata:
         name: {{ .Labels.portfolio }}-{{ .Labels.application }}-uat
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-admin-{{ .Labels.application }}-uat
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-uat
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: admin
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-admin  
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Name }}
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-edit-{{ .Labels.application }}-uat
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-uat
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: view
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-dev
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-view-{{ .Labels.application }}-uat
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-uat
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: view
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-view
