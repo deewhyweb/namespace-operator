@@ -1,0 +1,16 @@
+
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: app4-admin
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: app4-dev
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: app4-view

@@ -1,0 +1,34 @@
+  
+---
+kind: Group
+apiVersion: user.openshift.io/v1
+metadata:
+  name: app3-admin
+  labels:
+    portfolio: portfolio2
+    application: app3
+    role: admin
+users:
+  - app3-admin
+---
+kind: Group
+apiVersion: user.openshift.io/v1
+metadata:
+  name: app3-dev
+  labels:
+    portfolio: portfolio2
+    application: app3
+    role: dev
+users:
+  - app3-dev
+---
+kind: Group
+apiVersion: user.openshift.io/v1
+metadata:
+  name: app3-view
+  labels:
+    portfolio: portfolio2
+    application: app3
+    role: view
+users:
+  - app3-view
