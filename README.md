@@ -178,3 +178,55 @@ We'll create three portfolio level groups for each portfolio:
 `oc apply -f ./portfolio2/app3/groups.yml`
 
 `oc apply -f ./portfolio2/app4/groups.yml`
+
+## Verifiying
+
+Once all these objects are created running `oc get projects` should result in:
+
+```
+...
+portfolio1-app1-dev                                                    Active
+portfolio1-app1-qa                                                     Active
+portfolio1-app1-uat                                                    Active
+portfolio1-app2-dev                                                    Active
+portfolio1-app2-qa                                                     Active
+portfolio1-app2-uat                                                    Active
+portfolio2-app3-dev                                                    Active
+portfolio2-app3-qa                                                     Active
+portfolio2-app3-uat                                                    Active
+portfolio2-app4-dev                                                    Active
+portfolio2-app4-qa                                                     Active
+portfolio2-app4-uat                                                    Active
+...
+```
+
+As you can see, 12 projects have been created, 3 for each app.  Each portfolio is related to two apps.
+
+If we use one of these projects e.g. `oc project portfolio1-app1-dev`, then run `oc get rolebindings` we should see:
+
+```
+edit-app1-app1-dev-dev      3h49m
+portfolio1-admin-app1-dev   3h49m
+portfolio1-edit-app1-dev    3h49m
+portfolio1-view-app1-dev    3h49m
+system:deployers            3h49m
+system:image-builders       3h49m
+system:image-pullers        3h49m
+view-app1-app1-view-dev     3h49m
+```
+
+We can now look at these role bindings e.g. `oc describe rolebinding portfolio1-admin-app1-dev` shows the ClusterRole "admin" is bound to two groups, "portfolio1-admin" and "app1-admin" which is correct.
+
+```
+Name:         portfolio1-admin-app1-dev
+Labels:       <none>
+Annotations:  <none>
+Role:
+  Kind:  ClusterRole
+  Name:  admin
+Subjects:
+  Kind   Name              Namespace
+  ----   ----              ---------
+  Group  portfolio1-admin  
+  Group  app1-admin        
+```
