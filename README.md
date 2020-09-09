@@ -93,6 +93,12 @@ Once this group is created the following takes place:
 
 To run, install the OpenShift Namespace operator
 
+`oc new-project namespace-configuration-operator`
+
+`oc apply -f operators.yml`
+
+`oc apply -f operator-subscriptions.yml`
+
 ### Configure Group Configs
 
 `oc apply -f portfolio-app-admin.yml`

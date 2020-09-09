@@ -1,0 +1,9 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: community-operators
+  namespace: namespace-configuration-operator
+spec:
+  source: community-operators
+  targetNamespace: namespace-configuration-operator 
+  packages: namespace-configuration-operator
