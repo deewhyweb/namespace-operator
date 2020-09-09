@@ -1,0 +1,69 @@
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: GroupConfig
+metadata:
+  name: portfolio-group-config
+spec:
+  labelSelector:
+    matchLabels:
+      role: admin
+  templates:
+  - objectTemplate: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ .Labels.portfolio }}-{{ .Labels.application }}-dev
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-admin-{{ .Labels.application }}-dev
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-dev
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: admin
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-admin  
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Name }}
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-edit-{{ .Labels.application }}-dev
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-dev
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: edit
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-dev
+  - objectTemplate: |
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: RoleBinding
+      metadata:
+        name: {{ .Labels.portfolio }}-view-{{ .Labels.application }}-dev
+        namespace: {{ .Labels.portfolio }}-{{ .Labels.application }}-dev
+      roleRef:
+        apiGroup: rbac.authorization.k8s.io
+        kind: ClusterRole
+        name: view
+      subjects:
+      - kind: Group
+        apiGroup: rbac.authorization.k8s.io
+        name: {{ .Labels.portfolio }}-view
+  - objectTemplate: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ .Labels.portfolio }}-{{ .Labels.application }}-qa
+  - objectTemplate: |
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: {{ .Labels.portfolio }}-{{ .Labels.application }}-uat

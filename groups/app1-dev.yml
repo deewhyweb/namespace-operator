@@ -1,0 +1,12 @@
+  
+---
+kind: Group
+apiVersion: user.openshift.io/v1
+metadata:
+  name: app1-dev
+  labels:
+    portfolio: portfolio1
+    application: app1
+    role: dev
+users:
+  - app1-dev

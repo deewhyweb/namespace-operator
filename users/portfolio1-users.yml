@@ -1,0 +1,22 @@
+
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: portfolio1-admin
+groups:
+  - portfolio1-admin
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: portfolio1-dev
+groups:
+  - portfolio1-dev
+---
+apiVersion: user.openshift.io/v1
+kind: User
+metadata:
+  name: portfolio1-view
+groups:
+  - portfolio1-view
