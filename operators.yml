@@ -5,5 +5,6 @@ metadata:
   namespace: namespace-configuration-operator
 spec:
   source: community-operators
-  targetNamespace: namespace-configuration-operator 
+  targetNamespaces: 
+  - namespace-configuration-operator 
   packages: namespace-configuration-operator
