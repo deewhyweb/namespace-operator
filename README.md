@@ -230,3 +230,18 @@ Subjects:
   Group  portfolio1-admin  
   Group  app1-admin        
 ```
+# Group sync
+
+Install group sync operator
+
+Create secret
+
+`oc create secret generic azure-group-sync --from-literal=AZURE_SUBSCRIPTION_ID=xxxx --from-literal=AZURE_TENANT_ID=xxxx --from-literal=AZURE_CLIENT_ID=xxxx --from-literal=AZURE_CLIENT_SECRET=xxxx`
+
+Deploy azure GroupSync object
+
+`oc apply -f ./group-sync/azure.yml`
+
+When groups are created, run `./process-group.sh`
+
+

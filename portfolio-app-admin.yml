@@ -1,5 +1,6 @@
 apiVersion: redhatcop.redhat.io/v1alpha1
 kind: GroupConfig
+namespace: namespace-configuration-operator
 metadata:
   name: portfolio-group-config
 spec:

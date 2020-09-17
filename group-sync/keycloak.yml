@@ -1,0 +1,15 @@
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: GroupSync
+metadata:
+  name: keycloak-groupsync
+spec:
+  schedule: "*/2 * * * *"
+  providers:
+    - name: keycloak
+      keycloak:
+        realm: demo
+        url: "https://keycloak-default.apps.cluster-fiserv-71d5.fiserv-71d5.example.opentlc.com/"
+        insecure: true
+        credentialsSecret:
+          name: keycloak-group-sync
+          namespace: group-sync-operator
