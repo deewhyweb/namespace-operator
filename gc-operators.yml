@@ -1,0 +1,10 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: community-operators
+  namespace: group-sync-operator
+spec:
+  source: community-operators
+  targetNamespaces: 
+  - group-sync-operator 
+  packages: group-sync-operator

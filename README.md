@@ -99,6 +99,13 @@ To run, install the OpenShift Namespace operator
 
 `oc apply -f operator-subscriptions.yml`
 
+You should noe see the namespace-configuration operator pod e.g.
+
+```
+NAME                                                READY   STATUS    RESTARTS   AGE
+namespace-configuration-operator-6b7b6ff978-slqwr   1/1     Running   0          51s
+```
+
 ### Configure Group Configs
 
 `oc apply -f portfolio-app-admin.yml`
@@ -107,134 +114,37 @@ To run, install the OpenShift Namespace operator
 
 `oc apply -f portfolio-app-view.yml`
 
-### Create users
-
-Users would normally be created via integration with an external authentication provider, for this demo though we're going to create some sample users.
-
-
-Portfolio1: 
-
-* portfolio1-admin
-* portfolio1-dev
-* portfolio1-view
-
-App level users
-
-* app1-admin
-* app1-dev
-* app1-view
-
-* app2-admin
-* app2-dev
-* app2-view
-
-Portfolio2:
-
-* portfolio2-admin
-* portfolio2-dev
-* portfolio2-view
-
-App level users
-
-* app3-admin
-* app3-dev
-* app3-view
-
-* app4-admin
-* app4-dev
-* app4-view
-
-
-`oc apply -f ./portfolio1/users.yml`
-
-`oc apply -f ./portfolio1/app1/users.yml`
-
-`oc apply -f ./portfolio1/app2/users.yml`
-
-`oc apply -f ./portfolio2/users.yml`
-
-`oc apply -f ./portfolio2/app3/users.yml`
-
-`oc apply -f ./portfolio2/app4/users.yml`
-
-## Create portfolio groups
-
-We'll create three portfolio level groups for each portfolio:
-
-* admin
-* dev
-* view
-
-`oc apply -f ./portfolio1/groups.yml`
-
-`oc apply -f ./portfolio2/groups.yml`
-
-## Create app groups and trigger namespace creation
-
-`oc apply -f ./portfolio1/app1/groups.yml`
-
-`oc apply -f ./portfolio1/app2/groups.yml`
-
-`oc apply -f ./portfolio2/app3/groups.yml`
-
-`oc apply -f ./portfolio2/app4/groups.yml`
-
-## Verifiying
-
-Once all these objects are created running `oc get projects` should result in:
-
-```
-...
-portfolio1-app1-dev                                                    Active
-portfolio1-app1-qa                                                     Active
-portfolio1-app1-uat                                                    Active
-portfolio1-app2-dev                                                    Active
-portfolio1-app2-qa                                                     Active
-portfolio1-app2-uat                                                    Active
-portfolio2-app3-dev                                                    Active
-portfolio2-app3-qa                                                     Active
-portfolio2-app3-uat                                                    Active
-portfolio2-app4-dev                                                    Active
-portfolio2-app4-qa                                                     Active
-portfolio2-app4-uat                                                    Active
-...
-```
-
-As you can see, 12 projects have been created, 3 for each app.  Each portfolio is related to two apps.
-
-If we use one of these projects e.g. `oc project portfolio1-app1-dev`, then run `oc get rolebindings` we should see:
-
-```
-edit-app1-app1-dev-dev      3h49m
-portfolio1-admin-app1-dev   3h49m
-portfolio1-edit-app1-dev    3h49m
-portfolio1-view-app1-dev    3h49m
-system:deployers            3h49m
-system:image-builders       3h49m
-system:image-pullers        3h49m
-view-app1-app1-view-dev     3h49m
-```
-
-We can now look at these role bindings e.g. `oc describe rolebinding portfolio1-admin-app1-dev` shows the ClusterRole "admin" is bound to two groups, "portfolio1-admin" and "app1-admin" which is correct.
-
-```
-Name:         portfolio1-admin-app1-dev
-Labels:       <none>
-Annotations:  <none>
-Role:
-  Kind:  ClusterRole
-  Name:  admin
-Subjects:
-  Kind   Name              Namespace
-  ----   ----              ---------
-  Group  portfolio1-admin  
-  Group  app1-admin        
-```
 # Group sync
+
+## Known issues
+
+* The group-sync operator active directory plugin uses "Azure AD Graph API" which is on a depreciation path since June 30th 2020.  There are plans to move to Microsoft Graph but there is not a concrete date for this at present
+* Once changes are made to groups (e.g. label updates), the group will no longer be updated by the group-sync operator e.g. in the event new users are added.  An issue has been created for this and a PR is in the works.
+
+## Setup
+
+In order to connect to Azure AD and sync groups, we need to create Azure AD api access, to do this use the link below:
+
+[Configure Azure AD api access](azure-setup.md)
+
+Create a group-sync-operator namespace 
+
+`oc new-project group-sync-operator`
 
 Install group sync operator
 
-Create secret
+`oc apply -f gc-operators.yml`
+
+`oc apply -f gc-operator-subscriptions.yml`
+
+You should see a pod e.g.
+
+```
+NAME                                   READY   STATUS              RESTARTS   AGE
+group-sync-operator-54f99579f6-h96jb   0/1     ContainerCreating   0          1s
+```
+
+Create secret using the information retrieved from the Azure app api setup
 
 `oc create secret generic azure-group-sync --from-literal=AZURE_SUBSCRIPTION_ID=xxxx --from-literal=AZURE_TENANT_ID=xxxx --from-literal=AZURE_CLIENT_ID=xxxx --from-literal=AZURE_CLIENT_SECRET=xxxx`
 
@@ -242,6 +152,14 @@ Deploy azure GroupSync object
 
 `oc apply -f ./group-sync/azure.yml`
 
-When groups are created, run `./process-group.sh`
+Check the logs of the group-sync-operator pod, you should see something like:
+
+```
+{"level":"info","ts":1600871907.470308,"logger":"controller_groupsync","msg":"Reconciling GroupSync","Request.Namespace":"","Request.Name":"azure-groupsync"}
+{"level":"info","ts":1600871907.570612,"logger":"controller_groupsync","msg":"Beginning Sync","Request.Namespace":"","Request.Name":"azure-groupsync","Provider":"azure"}
+{"level":"info","ts":1600871910.856552,"logger":"controller_groupsync","msg":"Sync Completed Successfully","Request.Namespace":"","Request.Name":"azure-groupsync","Provider":"azure","Groups Created or Updated":10}
+```
+
+When groups are created, run `./process-group.sh` to configure the labels for the namespace-operator to trigger namespace and role bindings.
 
 
